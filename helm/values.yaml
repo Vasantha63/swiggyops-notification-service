@@ -1,0 +1,50 @@
+# SwiggyOps Notification Service Helm Values
+
+replicaCount: 2
+
+image:
+  repository: 654654435115.dkr.ecr.ap-south-1.amazonaws.com/swiggyops-notification-service
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8006
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "250m"
+  limits:
+    memory: "128Mi"
+    cpu: "500m"
+
+env:
+  APP_ENV: production
+  PORT: "8006"
+
+probes:
+  liveness:
+    path: /health
+    port: 8006
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readiness:
+    path: /health
+    port: 8006
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+monitoring:
+  enabled: true
+  prometheus:
+    scrape: true
+    port: 8006
+    path: /metrics
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
